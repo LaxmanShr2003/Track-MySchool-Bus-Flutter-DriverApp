@@ -1,0 +1,76 @@
+# Miscellaneous system files
+*.class
+*.log
+*.pyc
+*.swp
+*.tmp
+.DS_Store
+.atom/
+.env
+.history
+.svn/
+*.bak
+
+# IntelliJ/Android Studio
+*.iml
+.idea/
+.gradle/
+.local/
+
+# VS Code (optional - uncomment if needed)
+#.vscode/
+
+# Flutter/Dart/Pub related
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+.melody/
+.melos_tool/
+.metadata
+
+# iOS
+ios/Flutter/.last_build_id
+ios/Pods/
+ios/Runner.xcworkspace/
+ios/build/
+
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+
+# Web build
+web/.dart_tool/
+web/build/
+
+# Windows/Linux/MacOS builds
+windows/ephemeral/
+windows/build/
+linux/build/
+macos/build/
+
+# Symbolication and Obfuscation
+app.*.symbols
+app.*.map.json
+
+# Coverage
+coverage/
+
+# Firebase generated files
+firebase_app_id_file.json
+
+# Lock files (optional if not using version pinning)
+pubspec.lock
+
+# Logs and crash reports
+*.log
+crashlytics/
+
+# Temporary files
+*.tmp
+*.temp
