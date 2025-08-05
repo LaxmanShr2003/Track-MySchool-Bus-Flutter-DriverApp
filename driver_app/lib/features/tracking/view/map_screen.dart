@@ -1,13 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
-import 'package:driver_app/features/tracking/controller/tracking_controller.dart';
-import 'package:driver_app/models/tracking_response.dart';
 
 class MapScreen extends StatefulWidget {
   final Widget child;
