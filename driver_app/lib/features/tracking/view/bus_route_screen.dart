@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:driver_app/features/tracking/controller/tracking_controller.dart';
@@ -26,6 +25,7 @@ class _BusRouteScreenState extends ConsumerState<BusRouteScreen> {
   bool _isLoadingRoute = false;
   bool _showRouteInfo = false;
   bool _isMapReady = false;
+  final MapController _mapController = MapController(); // ✅ Added MapController
 
   @override
   void initState() {
@@ -34,6 +34,12 @@ class _BusRouteScreenState extends ConsumerState<BusRouteScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _initializeTracking();
     });
+  }
+
+  @override
+  void dispose() {
+    _mapController.dispose(); // ✅ Dispose controller
+    super.dispose();
   }
 
   Future<void> _initializeLocation() async {
@@ -106,8 +112,8 @@ class _BusRouteScreenState extends ConsumerState<BusRouteScreen> {
           List<LatLng> waypoints = [
             LatLng(
               routeDetails.startLat,
-              routeDetails.endLng,
-            ), // Fixed: was using endLng for start
+              routeDetails.endLng, // Using available coordinate from API
+            ),
             ...checkpoints.map((cp) => LatLng(cp.lat, cp.lng)),
           ];
 
@@ -174,14 +180,62 @@ class _BusRouteScreenState extends ConsumerState<BusRouteScreen> {
 
   void _centerOnCurrentLocation() {
     debugPrint('🗺️ Centering map on current location');
-    if (_currentPosition == null) {
+    if (_currentPosition != null && _isMapReady) {
+      try {
+        // ✅ Add safety check and delay to ensure map is ready
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted && _isMapReady) {
+            _mapController.move(
+              LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
+              15.0,
+            );
+          }
+        });
+      } catch (e) {
+        debugPrint('Error centering map: $e');
+      }
+    } else {
       _initializeLocation();
     }
   }
 
   void _fitRouteToMap() {
     debugPrint('🗺️ Fitting map to show entire route');
-    // This will be handled by the map widget
+    if (_routePoints.isNotEmpty && _isMapReady) {
+      try {
+        // ✅ Add safety check and delay to ensure map is ready
+        Future.delayed(const Duration(milliseconds: 100), () {
+          if (mounted && _isMapReady && _routePoints.isNotEmpty) {
+            // Calculate bounds and fit to map
+            double minLat = _routePoints.first.latitude;
+            double maxLat = _routePoints.first.latitude;
+            double minLng = _routePoints.first.longitude;
+            double maxLng = _routePoints.first.longitude;
+
+            for (final point in _routePoints) {
+              minLat = minLat < point.latitude ? minLat : point.latitude;
+              maxLat = maxLat > point.latitude ? maxLat : point.latitude;
+              minLng = minLng < point.longitude ? minLng : point.longitude;
+              maxLng = maxLng > point.longitude ? maxLng : point.longitude;
+            }
+
+            final bounds = LatLngBounds(
+              LatLng(minLat, minLng),
+              LatLng(maxLat, maxLng),
+            );
+
+            _mapController.fitCamera(
+              CameraFit.bounds(
+                bounds: bounds,
+                padding: const EdgeInsets.all(50),
+              ),
+            );
+          }
+        });
+      } catch (e) {
+        debugPrint('Error fitting route to map: $e');
+      }
+    }
   }
 
   Future<void> _startTracking() async {
@@ -255,28 +309,31 @@ class _BusRouteScreenState extends ConsumerState<BusRouteScreen> {
       backgroundColor: const Color(0xFFF8FAFC),
       body: Stack(
         children: [
-          // Map
-          BusRouteMap(
-            routeDetails: routeDetails,
-            checkpoints: checkpoints,
-            routePoints: _routePoints,
-            currentPosition: _currentPosition,
-            isMapReady: _isMapReady,
-            onMapReady: () {
-              setState(() {
-                _isMapReady = true;
-              });
-            },
-            onMapTap: () {
-              if (_showRouteInfo) {
+          // Map - ✅ Make sure it's at the bottom of the stack
+          Positioned.fill(
+            child: BusRouteMap(
+              routeDetails: routeDetails,
+              checkpoints: checkpoints,
+              routePoints: _routePoints,
+              currentPosition: _currentPosition,
+              isMapReady: _isMapReady,
+              mapController: _mapController, // ✅ Pass the controller
+              onMapReady: () {
                 setState(() {
-                  _showRouteInfo = false;
+                  _isMapReady = true;
                 });
-              }
-            },
+              },
+              onMapTap: () {
+                if (_showRouteInfo) {
+                  setState(() {
+                    _showRouteInfo = false;
+                  });
+                }
+              },
+            ),
           ),
 
-          // Status Card
+          // Status Card - ✅ Ensure proper positioning
           Positioned(
             top: MediaQuery.of(context).padding.top + 16,
             left: 16,
@@ -288,7 +345,7 @@ class _BusRouteScreenState extends ConsumerState<BusRouteScreen> {
             ),
           ),
 
-          // Control Buttons
+          // Control Buttons - ✅ Ensure they're clickable
           Positioned(
             bottom: MediaQuery.of(context).padding.bottom + 16,
             right: 16,
@@ -296,15 +353,25 @@ class _BusRouteScreenState extends ConsumerState<BusRouteScreen> {
               isLoading: trackingState.isLoading,
               isTracking: trackingState.isTracking,
               onTrackingToggle: () {
+                debugPrint('🔘 Tracking button pressed'); // ✅ Debug print
                 if (trackingState.isTracking) {
                   _stopTracking();
                 } else {
                   _startTracking();
                 }
               },
-              onLocationCenter: _centerOnCurrentLocation,
-              onFitRoute: _fitRouteToMap,
-              onRefresh: _refreshData,
+              onLocationCenter: () {
+                debugPrint('🔘 Location button pressed'); // ✅ Debug print
+                _centerOnCurrentLocation();
+              },
+              onFitRoute: () {
+                debugPrint('🔘 Fit route button pressed'); // ✅ Debug print
+                _fitRouteToMap();
+              },
+              onRefresh: () {
+                debugPrint('🔘 Refresh button pressed'); // ✅ Debug print
+                _refreshData();
+              },
             ),
           ),
 
@@ -316,6 +383,7 @@ class _BusRouteScreenState extends ConsumerState<BusRouteScreen> {
               child: FloatingActionButton(
                 heroTag: 'info_toggle',
                 onPressed: () {
+                  debugPrint('🔘 Info button pressed'); // ✅ Debug print
                   setState(() {
                     _showRouteInfo = true;
                   });
@@ -348,11 +416,12 @@ class _BusRouteScreenState extends ConsumerState<BusRouteScreen> {
               ),
             ),
 
-          // Loading Overlay
-          LoadingOverlay(
-            isLoading: trackingState.isLoading || _isLoadingRoute,
-            loadingText: _isLoadingRoute ? 'Loading route...' : 'Loading...',
-          ),
+          // Loading Overlay - ✅ Make sure it doesn't block buttons when not loading
+          if (trackingState.isLoading || _isLoadingRoute)
+            LoadingOverlay(
+              isLoading: trackingState.isLoading || _isLoadingRoute,
+              loadingText: _isLoadingRoute ? 'Loading route...' : 'Loading...',
+            ),
         ],
       ),
     );

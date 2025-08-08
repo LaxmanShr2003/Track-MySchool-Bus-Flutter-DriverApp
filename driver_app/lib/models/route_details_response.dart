@@ -136,7 +136,7 @@ class RouteAssignmentDetails {
           (json['students'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
-          [],
+          const <String>[],
     );
   }
 

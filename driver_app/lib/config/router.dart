@@ -2,6 +2,7 @@ import 'package:driver_app/features/auth/view/login_screen.dart';
 import 'package:driver_app/features/profile/view/profile_screen.dart';
 import 'package:driver_app/features/tracking/view/map_screen.dart';
 import 'package:driver_app/features/tracking/view/bus_route_screen.dart';
+import 'package:driver_app/features/attendance/view/attendance_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -380,7 +381,7 @@ final GoRouter appRouter = GoRouter(
           pageBuilder: (context, state) {
             return CustomTransitionPage(
               key: state.pageKey,
-              child: const Center(child: Text('Attendance History')),
+              child: const AttendanceScreen(),
               transitionsBuilder: (
                 context,
                 animation,

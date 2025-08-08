@@ -12,6 +12,7 @@ class BusRouteMap extends StatefulWidget {
   final bool isMapReady;
   final VoidCallback onMapReady;
   final VoidCallback onMapTap;
+  final MapController? mapController; // ✅ Added optional MapController
 
   const BusRouteMap({
     super.key,
@@ -22,6 +23,7 @@ class BusRouteMap extends StatefulWidget {
     required this.isMapReady,
     required this.onMapReady,
     required this.onMapTap,
+    this.mapController, // ✅ Optional parameter
   });
 
   @override
@@ -29,13 +31,14 @@ class BusRouteMap extends StatefulWidget {
 }
 
 class _BusRouteMapState extends State<BusRouteMap> {
-  final MapController _mapController = MapController();
+  late final MapController _mapController;
   static const LatLng _defaultPosition = LatLng(27.7172, 85.3240);
 
   @override
-  void dispose() {
-    _mapController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    // ✅ Use provided controller or create new one
+    _mapController = widget.mapController ?? MapController();
   }
 
   List<Marker> _buildMarkers() {
@@ -71,12 +74,14 @@ class _BusRouteMapState extends State<BusRouteMap> {
     }
 
     if (widget.routeDetails != null) {
-      // Start point marker
+      // Start point marker - FIXED: Based on your API response structure
       markers.add(
         Marker(
           point: LatLng(
             widget.routeDetails!.startLat,
-            widget.routeDetails!.endLng,
+            widget
+                .routeDetails!
+                .endLng, // Using endLng as it's the only lng field available
           ),
           width: 50,
           height: 50,
@@ -87,7 +92,7 @@ class _BusRouteMapState extends State<BusRouteMap> {
               border: Border.all(color: Colors.white, width: 3),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.3),
+                  color: Colors.black.withValues(alpha: 0.3),
                   blurRadius: 6,
                   offset: const Offset(0, 3),
                 ),
@@ -97,6 +102,9 @@ class _BusRouteMapState extends State<BusRouteMap> {
           ),
         ),
       );
+
+      // Remove end point marker since your API doesn't provide endLat
+      // If you need an end point, use the last checkpoint instead
 
       // Checkpoint markers
       for (int i = 0; i < widget.checkpoints.length; i++) {
@@ -113,7 +121,7 @@ class _BusRouteMapState extends State<BusRouteMap> {
                 border: Border.all(color: Colors.white, width: 2),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     blurRadius: 6,
                     offset: const Offset(0, 3),
                   ),
@@ -152,7 +160,10 @@ class _BusRouteMapState extends State<BusRouteMap> {
     } else if (widget.routeDetails != null) {
       if (widget.checkpoints.isNotEmpty) {
         final List<LatLng> polylinePoints = [
-          LatLng(widget.routeDetails!.startLat, widget.routeDetails!.endLng),
+          LatLng(
+            widget.routeDetails!.startLat,
+            widget.routeDetails!.endLng,
+          ), // Using available coordinates
           ...widget.checkpoints.map((cp) => LatLng(cp.lat, cp.lng)),
         ];
 
@@ -178,14 +189,14 @@ class _BusRouteMapState extends State<BusRouteMap> {
             widget.routeDetails != null
                 ? LatLng(
                   widget.routeDetails!.startLat,
-                  widget.routeDetails!.endLng,
+                  widget.routeDetails!.endLng, // Using available coordinates
                 )
                 : _defaultPosition,
         initialZoom: 13.0,
         minZoom: 10.0,
         maxZoom: 18.0,
         interactionOptions: const InteractionOptions(
-          flags: InteractiveFlag.all,
+          flags: InteractiveFlag.all, // ✅ This should enable all interactions
         ),
         onMapReady: () {
           debugPrint('✅ Map is ready');

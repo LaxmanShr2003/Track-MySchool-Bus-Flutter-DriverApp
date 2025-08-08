@@ -395,7 +395,7 @@ class TrackingController extends StateNotifier<TrackingState> {
 
   /// Gets students from active route assignment
   List<String> get studentsFromActiveAssignment {
-    return activeRouteDetailsAssignment?.students ?? [];
+    return activeRouteDetailsAssignment?.students ?? const <String>[];
   }
 }
 
