@@ -20,7 +20,7 @@ class TrackingService {
   RouteData? _currentRoute;
 
   // WebSocket configuration (env-based, so not const)
-  static late final String _wsHost = dotenv.env['WEBSOCKET_URL']!;
+  static final String _wsHost = dotenv.env['WEBSOCKET_URL']!;
   static const int _wsPort = 8080;
   static const String _wsPath = '/ws/tracking';
 

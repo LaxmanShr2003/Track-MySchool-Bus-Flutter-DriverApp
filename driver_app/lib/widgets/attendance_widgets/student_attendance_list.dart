@@ -98,6 +98,39 @@ class StudentAttendanceList extends StatelessWidget {
           ),
         ),
 
+        // Warning message for students needing offboarding
+        if (!_canCompleteTrip() && controller != null) ...[
+          Container(
+            margin: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: const Color(0xFFFEF3C7),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: const Color(0xFFF59E0B)),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.warning_amber_rounded,
+                  color: Color(0xFFF59E0B),
+                  size: 20,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${controller!.studentsNeedingOffboarding.length} student(s) still need to be offboarded before completing the trip',
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF92400E),
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+
         // Students List
         Expanded(
           child: ListView.builder(
@@ -129,9 +162,13 @@ class StudentAttendanceList extends StatelessWidget {
           ), // Extra bottom margin for bottom nav
           width: double.infinity,
           child: ElevatedButton(
-            onPressed: isLoading ? null : onCompleteTrip,
+            onPressed:
+                (isLoading || !_canCompleteTrip()) ? null : onCompleteTrip,
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF3B82F6),
+              backgroundColor:
+                  _canCompleteTrip()
+                      ? const Color(0xFF3B82F6)
+                      : const Color(0xFF9CA3AF),
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
@@ -148,12 +185,26 @@ class StudentAttendanceList extends StatelessWidget {
                         valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     )
-                    : const Text(
-                      'Complete Trip',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+                    : Column(
+                      children: [
+                        Text(
+                          'Complete Trip',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        if (!_canCompleteTrip()) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            'All students must be offboarded or absent',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.white.withValues(alpha: 0.8),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
           ),
         ),
@@ -171,6 +222,8 @@ class StudentAttendanceList extends StatelessWidget {
       // Fallback to calculating from student list
       final onboardedCount =
           students.where((s) => s.attendanceStatus == 'ONBOARDED').length;
+      final offboardedCount =
+          students.where((s) => s.attendanceStatus == 'OFFBOARDED').length;
       final absentCount =
           students.where((s) => s.attendanceStatus == 'ABSENT').length;
       final pendingCount =
@@ -178,6 +231,7 @@ class StudentAttendanceList extends StatelessWidget {
 
       summary = {
         'ONBOARDED': onboardedCount,
+        'OFFBOARDED': offboardedCount,
         'ABSENT': absentCount,
         'PENDING': pendingCount,
       };
@@ -189,6 +243,12 @@ class StudentAttendanceList extends StatelessWidget {
           'Onboarded',
           summary['ONBOARDED'] ?? 0,
           const Color(0xFF10B981),
+        ),
+        const SizedBox(width: 8),
+        _buildSummaryItem(
+          'Offboarded',
+          summary['OFFBOARDED'] ?? 0,
+          const Color(0xFF3B82F6),
         ),
         const SizedBox(width: 8),
         _buildSummaryItem(
@@ -224,6 +284,14 @@ class StudentAttendanceList extends StatelessWidget {
       ],
     );
   }
+
+  /// Check if trip can be completed
+  bool _canCompleteTrip() {
+    if (controller == null) {
+      return false;
+    }
+    return controller!.canCompleteTrip;
+  }
 }
 
 class _StudentAttendanceCard extends StatelessWidget {
@@ -240,6 +308,8 @@ class _StudentAttendanceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isOnboarded = student.attendanceStatus == 'ONBOARDED';
+    final isOffboarded = student.attendanceStatus == 'OFFBOARDED';
+    final isAbsent = student.attendanceStatus == 'ABSENT';
     final isPending = student.attendanceStatus == 'PENDING';
 
     return Container(
@@ -343,8 +413,9 @@ class _StudentAttendanceCard extends StatelessWidget {
               ),
             ),
 
-            // Action Buttons stacked vertically
+            // Action Buttons or Status Icons
             if (isPending && !isLoading) ...[
+              // Pending students can be onboarded or marked absent
               const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -362,6 +433,14 @@ class _StudentAttendanceCard extends StatelessWidget {
                   ),
                 ],
               ),
+            ] else if (isOnboarded && !isLoading) ...[
+              // Onboarded students can be offboarded
+              const SizedBox(width: 8),
+              _ActionButton(
+                label: 'OFFBOARD',
+                color: const Color(0xFF3B82F6),
+                onTap: () => onMarkAttendance(student.id, 'OFFBOARD'),
+              ),
             ] else if (isLoading) ...[
               const SizedBox(width: 8),
               const SizedBox(
@@ -373,13 +452,20 @@ class _StudentAttendanceCard extends StatelessWidget {
                 ),
               ),
             ] else ...[
+              // Show status icon for completed states
               const SizedBox(width: 8),
               Icon(
-                isOnboarded ? Icons.check_circle : Icons.cancel,
+                isOffboarded
+                    ? Icons.check_circle
+                    : isAbsent
+                    ? Icons.cancel
+                    : Icons.help_outline,
                 color:
-                    isOnboarded
-                        ? const Color(0xFF10B981)
-                        : const Color(0xFFEF4444),
+                    isOffboarded
+                        ? const Color(0xFF3B82F6)
+                        : isAbsent
+                        ? const Color(0xFFEF4444)
+                        : const Color(0xFF6B7280),
                 size: 24,
               ),
             ],
@@ -393,6 +479,8 @@ class _StudentAttendanceCard extends StatelessWidget {
     switch (status) {
       case 'ONBOARDED':
         return const Color(0xFF10B981);
+      case 'OFFBOARDED':
+        return const Color(0xFF3B82F6);
       case 'ABSENT':
         return const Color(0xFFEF4444);
       case 'PENDING':

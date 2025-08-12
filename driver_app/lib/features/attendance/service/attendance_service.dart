@@ -73,11 +73,19 @@ class AttendanceService {
 
       final message = {'type': 'ATTENDANCE', 'data': attendanceData.toJson()};
       print('📤 Sending WebSocket message: ${jsonEncode(message)}');
-      WebSocketManager.instance.emit('message', message);
-      print(
-        '📤 Attendance sent via WebSocket: ${attendanceData.action} for ${attendanceData.studentId}',
+      final success = await WebSocketManager.instance.safeEmit(
+        'message',
+        message,
       );
-      return true;
+      if (success) {
+        print(
+          '📤 Attendance sent via WebSocket: ${attendanceData.action} for ${attendanceData.studentId}',
+        );
+        return true;
+      } else {
+        print('❌ Failed to send attendance via WebSocket');
+        return false;
+      }
     } catch (e) {
       print('❌ Error sending attendance via WebSocket: $e');
       return false;
@@ -105,7 +113,7 @@ class AttendanceService {
         data: tripData.toJson(),
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
-          validateStatus: (status) => status! < 500,
+          validateStatus: (status) => (status ?? 0) < 500,
         ),
       );
 
@@ -187,7 +195,7 @@ class AttendanceService {
         url,
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
-          validateStatus: (status) => status! < 500,
+          validateStatus: (status) => (status ?? 0) < 500,
         ),
       );
 
@@ -269,7 +277,7 @@ class AttendanceService {
         url,
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
-          validateStatus: (status) => status! < 500,
+          validateStatus: (status) => (status ?? 0) < 500,
         ),
       );
 
@@ -356,7 +364,7 @@ class AttendanceService {
         url,
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
-          validateStatus: (status) => status! < 500,
+          validateStatus: (status) => (status ?? 0) < 500,
         ),
       );
 
@@ -366,27 +374,48 @@ class AttendanceService {
       if (response.statusCode == 200 || response.statusCode == 201) {
         // Parse the bus route response to extract student IDs
         final responseData = response.data;
+        print('🔍 Response Data Keys: ${responseData.keys.toList()}');
+        print('🔍 Response Data Success: ${responseData['success']}');
+        print('🔍 Response Data Data: ${responseData['data']}');
+
         if (responseData['success'] == true && responseData['data'] != null) {
           final busRouteData = responseData['data'];
+          print('🔍 Bus Route Data Keys: ${busRouteData.keys.toList()}');
+          print('🔍 Bus Route Data: $busRouteData');
+
           final routeAssignments =
               busRouteData['routeAssignment'] as List<dynamic>?;
+          print('🔍 Route Assignments: $routeAssignments');
+          print('🔍 Route Assignments Type: ${routeAssignments.runtimeType}');
 
           if (routeAssignments != null && routeAssignments.isNotEmpty) {
             // Extract student IDs from the first route assignment
             final firstAssignment = routeAssignments.first;
+            print('🔍 First Assignment: $firstAssignment');
+            print('🔍 First Assignment Keys: ${firstAssignment.keys.toList()}');
+
             final studentIds =
                 firstAssignment['students'] as List<dynamic>? ?? [];
+            print('🔍 Student IDs: $studentIds');
+            print('🔍 Student IDs Type: ${studentIds.runtimeType}');
 
             print('📋 Found ${studentIds.length} students in route assignment');
 
             // Fetch real student data for each student ID
             final students = <StudentData>[];
             for (final studentId in studentIds) {
+              print(
+                '🔍 Processing student ID: $studentId (Type: ${studentId.runtimeType})',
+              );
               final student = await getStudentById(studentId.toString());
               if (student != null) {
                 students.add(student);
+                print('✅ Added student: ${student.name}');
               } else {
                 // Fallback to basic student data if API call fails
+                print(
+                  '⚠️ Student not found, using fallback for ID: $studentId',
+                );
                 students.add(
                   StudentData(
                     id: studentId.toString(),
@@ -400,6 +429,7 @@ class AttendanceService {
               }
             }
 
+            print('✅ Successfully processed ${students.length} students');
             return StudentsResponse(
               success: true,
               message: 'Successfully fetched students',
@@ -408,6 +438,7 @@ class AttendanceService {
             );
           } else {
             // No route assignments found
+            print('ℹ️ No route assignments found');
             return StudentsResponse(
               success: true,
               message: 'No students assigned to this route',
@@ -416,6 +447,9 @@ class AttendanceService {
             );
           }
         } else {
+          print('❌ Invalid response format:');
+          print('  - success: ${responseData['success']}');
+          print('  - data: ${responseData['data']}');
           throw ErrorHandler.createApiException('Invalid response format');
         }
       } else {
@@ -477,47 +511,102 @@ class AttendanceService {
 
       final url = '$baseUrl/driver/$userId';
       print('📡 Fetching driver info: $url');
+      print('🔑 User ID: $userId');
+      print('🌐 Base URL: $baseUrl');
 
       final response = await _dio.get(
         url,
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
-          validateStatus: (status) => status! < 500,
+          validateStatus: (status) => (status ?? 0) < 500,
         ),
       );
 
+      print('📡 API Response Status: ${response.statusCode}');
+      print('📡 API Response Data: ${response.data}');
+
       if (response.statusCode == 200 || response.statusCode == 201) {
         final driverData = response.data;
-        final routeAssignments =
-            driverData['message']['routeAssignment'] as List<dynamic>?;
-        final activeAssignment =
-            routeAssignments
-                        ?.where(
-                          (assignment) =>
-                              assignment['assignmentStatus'] == 'ACTIVE',
-                        )
-                        .toList()
-                        .isNotEmpty ==
-                    true
-                ? routeAssignments!
-                    .where(
-                      (assignment) =>
-                          assignment['assignmentStatus'] == 'ACTIVE',
-                    )
-                    .first
-                : null;
 
-        if (activeAssignment != null) {
-          final busRouteId = activeAssignment['busRouteId'].toString();
-          print('✅ Bus route ID found: $busRouteId');
-          return busRouteId;
+        // Debug the response structure
+        print('🔍 Driver Data Keys: ${driverData.keys.toList()}');
+
+        if (driverData.containsKey('message')) {
+          final message = driverData['message'];
+          print('🔍 Message Keys: ${message.keys.toList()}');
+
+          if (message.containsKey('routeAssignment')) {
+            final routeAssignments =
+                message['routeAssignment'] as List<dynamic>?;
+            print('🔍 Route Assignments: $routeAssignments');
+            print('🔍 Route Assignments Type: ${routeAssignments.runtimeType}');
+            print('🔍 Route Assignments Length: ${routeAssignments?.length}');
+
+            if (routeAssignments != null && routeAssignments.isNotEmpty) {
+              // Debug each assignment
+              for (int i = 0; i < routeAssignments.length; i++) {
+                final assignment = routeAssignments[i];
+                print('🔍 Assignment $i: $assignment');
+                print('🔍 Assignment $i Keys: ${assignment.keys.toList()}');
+                print(
+                  '🔍 Assignment $i Status: ${assignment['assignmentStatus']}',
+                );
+                print(
+                  '🔍 Assignment $i BusRouteId: ${assignment['busRouteId']}',
+                );
+              }
+
+              final activeAssignment =
+                  routeAssignments
+                              .where(
+                                (assignment) =>
+                                    assignment['assignmentStatus'] == 'ACTIVE',
+                              )
+                              .toList()
+                              .isNotEmpty ==
+                          true
+                      ? routeAssignments
+                          .where(
+                            (assignment) =>
+                                assignment['assignmentStatus'] == 'ACTIVE',
+                          )
+                          .first
+                      : null;
+
+              print('🔍 Active Assignment: $activeAssignment');
+
+              if (activeAssignment != null) {
+                final busRouteId = activeAssignment['busRouteId'].toString();
+                print('✅ Bus route ID found: $busRouteId');
+                return busRouteId;
+              } else {
+                print(
+                  '⚠️ No active assignment found (all assignments are inactive)',
+                );
+                // Debug all assignment statuses
+                final allStatuses =
+                    routeAssignments.map((a) => a['assignmentStatus']).toList();
+                print('🔍 All Assignment Statuses: $allStatuses');
+              }
+            } else {
+              print('⚠️ Route assignments list is null or empty');
+            }
+          } else {
+            print('⚠️ No routeAssignment key found in message');
+          }
+        } else {
+          print('⚠️ No message key found in response');
         }
+      } else {
+        print('⚠️ API request failed with status: ${response.statusCode}');
+        print('⚠️ Response data: ${response.data}');
       }
 
       print('⚠️ No active bus route assignment found');
       return null;
     } catch (e) {
       print('❌ Error getting bus route ID: $e');
+      print('❌ Error stack trace: ${StackTrace.current}');
       return null;
     }
   }
@@ -549,7 +638,7 @@ class AttendanceService {
         url,
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
-          validateStatus: (status) => status! < 500,
+          validateStatus: (status) => (status ?? 0) < 500,
         ),
       );
 
@@ -621,7 +710,7 @@ class AttendanceService {
     }
     if (normalized.containsKey('endTime')) {
       final end = normalized['endTime'];
-      normalized['endTime'] = end == null ? null : end.toString();
+      normalized['endTime'] = end?.toString();
     }
     if (normalized.containsKey('direction')) {
       normalized['direction'] = normalized['direction']?.toString();
@@ -660,7 +749,7 @@ class AttendanceService {
         url,
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
-          validateStatus: (status) => status! < 500,
+          validateStatus: (status) => (status ?? 0) < 500,
         ),
       );
 

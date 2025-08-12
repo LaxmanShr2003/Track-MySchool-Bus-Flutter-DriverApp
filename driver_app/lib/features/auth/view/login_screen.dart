@@ -267,7 +267,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                   children: [
                     Positioned(
                       top:
-                          80 + (math.sin(_busAnimation.value * 2 * math.pi) * 15),
+                          80 +
+                          (math.sin(_busAnimation.value * 2 * math.pi) * 15),
                       left: 30,
                       child: Transform.rotate(
                         angle: _busAnimation.value * 0.1,
@@ -278,7 +279,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                             shape: BoxShape.circle,
                             color: Colors.white.withValues(alpha: 0.1),
                             border: Border.all(
-                              color: Colors.white.withValues(alpha: 0.2), 
+                              color: Colors.white.withValues(alpha: 0.2),
                               width: 2,
                             ),
                           ),
@@ -317,9 +318,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
               physics: ClampingScrollPhysics(),
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: SizedBox(
-                height: MediaQuery.of(context).size.height - 
-                       MediaQuery.of(context).padding.top - 
-                       MediaQuery.of(context).padding.bottom,
+                height:
+                    MediaQuery.of(context).size.height -
+                    MediaQuery.of(context).padding.top -
+                    MediaQuery.of(context).padding.bottom,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -345,7 +347,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 gradient: LinearGradient(
-                                  colors: [Colors.amber[300]!, Colors.orange[400]!],
+                                  colors: [
+                                    Colors.amber[300]!,
+                                    Colors.orange[400]!,
+                                  ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
@@ -399,7 +404,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                           child: BackdropFilter(
                             filter: ui.ImageFilter.blur(sigmaX: 15, sigmaY: 15),
                             child: Container(
-                              padding: EdgeInsets.all(isKeyboardVisible ? 20 : 24),
+                              padding: EdgeInsets.all(
+                                isKeyboardVisible ? 20 : 24,
+                              ),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   colors: [
@@ -434,7 +441,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                         Text(
                                           'SafeRide',
                                           style: GoogleFonts.poppins(
-                                            fontSize: isKeyboardVisible ? 24 : 28,
+                                            fontSize:
+                                                isKeyboardVisible ? 24 : 28,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white,
                                             letterSpacing: 1.2,
@@ -448,14 +456,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                               vertical: 4,
                                             ),
                                             decoration: BoxDecoration(
-                                              color: Colors.white.withValues(alpha: 0.2),
-                                              borderRadius: BorderRadius.circular(16),
+                                              color: Colors.white.withValues(
+                                                alpha: 0.2,
+                                              ),
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
                                             ),
                                             child: Text(
                                               'School Bus Tracking',
                                               style: GoogleFonts.poppins(
                                                 fontSize: 12,
-                                                color: Colors.white.withValues(alpha: 0.9),
+                                                color: Colors.white.withValues(
+                                                  alpha: 0.9,
+                                                ),
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
@@ -465,7 +478,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                             'Sign in to track and manage school buses safely',
                                             style: GoogleFonts.poppins(
                                               fontSize: 14,
-                                              color: Colors.white.withValues(alpha: 0.8),
+                                              color: Colors.white.withValues(
+                                                alpha: 0.8,
+                                              ),
                                             ),
                                             textAlign: TextAlign.center,
                                           ),
@@ -482,7 +497,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                     style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.white.withValues(alpha: 0.9),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 6),
@@ -491,7 +508,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.1),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.1,
+                                          ),
                                           blurRadius: 10,
                                           offset: Offset(0, 4),
                                         ),
@@ -501,14 +520,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       controller: _usernameController,
                                       focusNode: _usernameFocus,
                                       keyboardType: TextInputType.text,
-                                      onTap: () => HapticFeedback.selectionClick(),
+                                      onTap:
+                                          () => HapticFeedback.selectionClick(),
                                       decoration: InputDecoration(
                                         prefixIcon: Container(
                                           margin: EdgeInsets.all(12),
                                           padding: EdgeInsets.all(8),
                                           decoration: BoxDecoration(
                                             color: Colors.blue[400],
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                           ),
                                           child: Icon(
                                             Icons.badge_outlined,
@@ -522,17 +544,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                           fontSize: 16,
                                         ),
                                         filled: true,
-                                        fillColor: Colors.white.withValues(alpha: 0.9),
+                                        fillColor: Colors.white.withValues(
+                                          alpha: 0.9,
+                                        ),
                                         contentPadding: EdgeInsets.symmetric(
                                           vertical: isKeyboardVisible ? 16 : 20,
                                           horizontal: 16,
                                         ),
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                           borderSide: BorderSide.none,
                                         ),
                                         focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                           borderSide: BorderSide(
                                             color: Colors.blue[400]!,
                                             width: 2,
@@ -555,7 +583,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                     style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.white.withValues(alpha: 0.9),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.9,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 6),
@@ -564,7 +594,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color: Colors.black.withValues(alpha: 0.1),
+                                          color: Colors.black.withValues(
+                                            alpha: 0.1,
+                                          ),
                                           blurRadius: 10,
                                           offset: Offset(0, 4),
                                         ),
@@ -574,14 +606,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                       controller: _passwordController,
                                       focusNode: _passwordFocus,
                                       obscureText: obscurePassword,
-                                      onTap: () => HapticFeedback.selectionClick(),
+                                      onTap:
+                                          () => HapticFeedback.selectionClick(),
                                       decoration: InputDecoration(
                                         prefixIcon: Container(
                                           margin: EdgeInsets.all(12),
                                           padding: EdgeInsets.all(8),
                                           decoration: BoxDecoration(
                                             color: Colors.green[400],
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius: BorderRadius.circular(
+                                              8,
+                                            ),
                                           ),
                                           child: Icon(
                                             Icons.lock_outline,
@@ -595,17 +630,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                           fontSize: 16,
                                         ),
                                         filled: true,
-                                        fillColor: Colors.white.withValues(alpha: 0.9),
+                                        fillColor: Colors.white.withValues(
+                                          alpha: 0.9,
+                                        ),
                                         contentPadding: EdgeInsets.symmetric(
                                           vertical: isKeyboardVisible ? 16 : 20,
                                           horizontal: 16,
                                         ),
                                         border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                           borderSide: BorderSide.none,
                                         ),
                                         focusedBorder: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(16),
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
                                           borderSide: BorderSide(
                                             color: Colors.green[400]!,
                                             width: 2,
@@ -617,14 +658,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                             key: ValueKey(obscurePassword),
                                             icon: Icon(
                                               obscurePassword
-                                                  ? Icons.visibility_off_outlined
+                                                  ? Icons
+                                                      .visibility_off_outlined
                                                   : Icons.visibility_outlined,
                                               color: Colors.grey[600],
                                             ),
                                             onPressed: () {
                                               HapticFeedback.lightImpact();
                                               ref
-                                                  .read(_obscurePasswordProvider.notifier)
+                                                  .read(
+                                                    _obscurePasswordProvider
+                                                        .notifier,
+                                                  )
                                                   .state = !obscurePassword;
                                             },
                                           ),
@@ -651,60 +696,87 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                           height: isKeyboardVisible ? 48 : 50,
                                           decoration: BoxDecoration(
                                             gradient: LinearGradient(
-                                              colors: _isFormValid
-                                                  ? [Colors.blue[600]!, Colors.blue[400]!]
-                                                  : [Colors.grey[400]!, Colors.grey[300]!],
+                                              colors:
+                                                  _isFormValid
+                                                      ? [
+                                                        Colors.blue[600]!,
+                                                        Colors.blue[400]!,
+                                                      ]
+                                                      : [
+                                                        Colors.grey[400]!,
+                                                        Colors.grey[300]!,
+                                                      ],
                                               begin: Alignment.topLeft,
                                               end: Alignment.bottomRight,
                                             ),
-                                            borderRadius: BorderRadius.circular(16),
-                                            boxShadow: _isFormValid
-                                                ? [
-                                                    BoxShadow(
-                                                      color: Colors.blue.withValues(alpha: 0.4),
-                                                      blurRadius: 15,
-                                                      spreadRadius: 0,
-                                                      offset: Offset(0, 8),
-                                                    ),
-                                                  ]
-                                                : [],
+                                            borderRadius: BorderRadius.circular(
+                                              16,
+                                            ),
+                                            boxShadow:
+                                                _isFormValid
+                                                    ? [
+                                                      BoxShadow(
+                                                        color: Colors.blue
+                                                            .withValues(
+                                                              alpha: 0.4,
+                                                            ),
+                                                        blurRadius: 15,
+                                                        spreadRadius: 0,
+                                                        offset: Offset(0, 8),
+                                                      ),
+                                                    ]
+                                                    : [],
                                           ),
                                           child: Material(
                                             color: Colors.transparent,
                                             child: InkWell(
-                                              borderRadius: BorderRadius.circular(16),
-                                              onTap: (loginState.isLoading || !_isFormValid)
-                                                  ? null
-                                                  : handleLogin,
+                                              borderRadius:
+                                                  BorderRadius.circular(16),
+                                              onTap:
+                                                  (loginState.isLoading ||
+                                                          !_isFormValid)
+                                                      ? null
+                                                      : handleLogin,
                                               child: Center(
-                                                child: loginState.isLoading
-                                                    ? SizedBox(
-                                                        width: 24,
-                                                        height: 24,
-                                                        child: CircularProgressIndicator(
-                                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                                          strokeWidth: 2.5,
-                                                        ),
-                                                      )
-                                                    : Row(
-                                                        mainAxisAlignment: MainAxisAlignment.center,
-                                                        children: [
-                                                          Icon(
-                                                            Icons.login,
-                                                            color: Colors.white,
-                                                            size: 22,
+                                                child:
+                                                    loginState.isLoading
+                                                        ? SizedBox(
+                                                          width: 24,
+                                                          height: 24,
+                                                          child: CircularProgressIndicator(
+                                                            valueColor:
+                                                                AlwaysStoppedAnimation<
+                                                                  Color
+                                                                >(Colors.white),
+                                                            strokeWidth: 2.5,
                                                           ),
-                                                          SizedBox(width: 12),
-                                                          Text(
-                                                            'Start Tracking',
-                                                            style: GoogleFonts.poppins(
-                                                              color: Colors.white,
-                                                              fontWeight: FontWeight.w600,
-                                                              fontSize: 16,
+                                                        )
+                                                        : Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .center,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.login,
+                                                              color:
+                                                                  Colors.white,
+                                                              size: 22,
                                                             ),
-                                                          ),
-                                                        ],
-                                                      ),
+                                                            SizedBox(width: 12),
+                                                            Text(
+                                                              'Start Tracking',
+                                                              style: GoogleFonts.poppins(
+                                                                color:
+                                                                    Colors
+                                                                        .white,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w600,
+                                                                fontSize: 16,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
                                               ),
                                             ),
                                           ),
@@ -719,10 +791,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                     Container(
                                       padding: EdgeInsets.all(12),
                                       decoration: BoxDecoration(
-                                        color: Colors.white.withValues(alpha: 0.1),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.1,
+                                        ),
                                         borderRadius: BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: Colors.white.withValues(alpha: 0.2),
+                                          color: Colors.white.withValues(
+                                            alpha: 0.2,
+                                          ),
                                           width: 1,
                                         ),
                                       ),
@@ -739,7 +815,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                                               'Your login ensures student safety and route tracking',
                                               style: GoogleFonts.poppins(
                                                 fontSize: 11,
-                                                color: Colors.white.withValues(alpha: 0.8),
+                                                color: Colors.white.withValues(
+                                                  alpha: 0.8,
+                                                ),
                                               ),
                                             ),
                                           ),
@@ -756,10 +834,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
                     ),
 
                     // Flexible spacer at bottom
-                    Flexible(
-                      flex: 1,
-                      child: Container(),
-                    ),
+                    Flexible(flex: 1, child: Container()),
                   ],
                 ),
               ),
@@ -785,7 +860,7 @@ class ParticlePainter extends CustomPainter {
       final progress = (animationValue + (i * 0.1)) % 1.0;
       final opacity = (math.sin(progress * math.pi) * 0.6).clamp(0.0, 0.6);
 
-        paint.color = Colors.white.withValues(alpha: opacity * 0.3);
+      paint.color = Colors.white.withValues(alpha: opacity * 0.3);
 
       final x = random.nextDouble() * size.width;
       final y =
@@ -800,7 +875,7 @@ class ParticlePainter extends CustomPainter {
       final progress = (animationValue * 0.5 + (i * 0.2)) % 1.0;
       final opacity = (math.sin(progress * math.pi) * 0.3).clamp(0.0, 0.3);
 
-        paint.color = Colors.white.withValues(alpha: opacity);
+      paint.color = Colors.white.withValues(alpha: opacity);
 
       final x = (size.width * 0.2) + (i * size.width * 0.15);
       final y = size.height * 0.3 + (math.sin(progress * 2 * math.pi) * 50);

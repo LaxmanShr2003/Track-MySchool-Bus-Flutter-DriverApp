@@ -137,7 +137,8 @@ class StudentData {
   final String? photoUrl;
   final String? grade;
   final String? section;
-  final String attendanceStatus; // "PENDING", "ONBOARDED", "ABSENT"
+  final String
+  attendanceStatus; // "PENDING", "ONBOARDED", "OFFBOARDED", "ABSENT"
 
   StudentData({
     required this.id,

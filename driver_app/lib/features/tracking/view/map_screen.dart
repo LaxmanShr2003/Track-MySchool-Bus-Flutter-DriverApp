@@ -145,7 +145,7 @@ class _MapScreenState extends State<MapScreen> {
         child: InkWell(
           onTap: () => _onTabTapped(index, route),
           borderRadius: BorderRadius.circular(16),
-          child: Container(
+          child: SizedBox(
             height: 66,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

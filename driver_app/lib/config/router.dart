@@ -3,6 +3,7 @@ import 'package:driver_app/features/profile/view/profile_screen.dart';
 import 'package:driver_app/features/tracking/view/map_screen.dart';
 import 'package:driver_app/features/tracking/view/bus_route_screen.dart';
 import 'package:driver_app/features/attendance/view/attendance_screen.dart';
+import 'package:driver_app/features/chat/view/chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -426,7 +427,7 @@ final GoRouter appRouter = GoRouter(
           pageBuilder: (context, state) {
             return CustomTransitionPage(
               key: state.pageKey,
-              child: const Center(child: Text('Chat')),
+              child: const ChatScreen(),
               transitionsBuilder: (
                 context,
                 animation,
