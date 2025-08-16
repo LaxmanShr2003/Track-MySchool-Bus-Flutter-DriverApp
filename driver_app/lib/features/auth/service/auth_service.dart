@@ -29,11 +29,7 @@ class AuthService {
       final requestData = {
         'userName': username,
         'password': password,
-        // Alternative field names your backend might expect:
-        // 'username': username,
-        // 'user_name': username,
-        // 'email': username,
-        // 'user': username,
+    
       };
 
       final response = await _dio.post(

@@ -1,12 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:driver_app/features/chat/service/chat_service.dart';
 import 'package:driver_app/features/chat/models/chat_models.dart';
-import 'package:driver_app/core/websocket_manager.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:driver_app/features/chat/controller/chat_controller.dart';
-import 'package:driver_app/features/chat/models/chat_models.dart';
-import 'package:driver_app/features/chat/service/chat_service.dart';
 import 'package:driver_app/core/error_handler.dart';
 
 class ChatState {

@@ -48,7 +48,7 @@ class WebSocketManager {
       _connectionCompleter = Completer<bool>();
 
       final String url =
-          dotenv.env['WEB_SOCKET_API'] ?? 'ws://192.168.1.4:8080';
+          dotenv.env['WEB_SOCKET_API'] ?? 'ws://192.168.1.3:8080';
 
       print('🔌 Connecting to WebSocket: $url');
 

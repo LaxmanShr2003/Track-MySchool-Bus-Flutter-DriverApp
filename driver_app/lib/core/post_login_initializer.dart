@@ -1,6 +1,5 @@
 import 'package:driver_app/features/attendance/service/attendance_service.dart';
 import 'package:driver_app/features/chat/service/chat_service.dart';
-import 'package:driver_app/core/websocket_manager.dart';
 import 'package:driver_app/features/attendance/models/attendance_models.dart';
 
 /// Service responsible for initializing systems after successful login
